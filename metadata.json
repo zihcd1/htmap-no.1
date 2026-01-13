@@ -1,0 +1,7 @@
+{
+  "name": "Heatmap Re-Colorizer",
+  "description": "A professional-grade tool to extract intensity distributions from heatmap images and re-apply custom color gradients while preserving the original spatial structure and map background.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
