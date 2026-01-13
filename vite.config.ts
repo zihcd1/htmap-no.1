@@ -1,25 +1,34 @@
-import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
-  // 加载环境变量
+  // 获取环境变量（包括 Render 里的）
   const env = loadEnv(mode, process.cwd(), '');
+  
+  // 优先获取我们在 Render 设置的 Key
+  const finalKey = process.env.GOOGLE_API_KEY || process.env.VITE_GOOGLE_API_KEY || env.GOOGLE_API_KEY || '';
+
   return {
-    server: {
-      port: 3000,
-      host: '0.0.0.0',
-    },
     plugins: [react()],
-    define: {
-      // 关键修复：优先读取 Render 的环境变量，如果读不到再读本地的
-      'process.env.API_KEY': JSON.stringify(process.env.GOOGLE_API_KEY || process.env.VITE_GOOGLE_API_KEY || env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GOOGLE_API_KEY || process.env.VITE_GOOGLE_API_KEY || env.GEMINI_API_KEY),
-    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
-      }
-    }
+      },
+    },
+    define: {
+      // 🛡️ 保险 1：如果代码里写了 process.env.xxx，这里直接把 Key 填进去
+      'process.env.GEMINI_API_KEY': JSON.stringify(finalKey),
+      'process.env.API_KEY': JSON.stringify(finalKey),
+      'process.env.GOOGLE_API_KEY': JSON.stringify(finalKey),
+      'process.env.VITE_GOOGLE_API_KEY': JSON.stringify(finalKey),
+      
+      // 🛡️ 保险 2：如果代码里直接用了 process.env（没有点），防止它报错
+      'process.env': JSON.stringify({
+         GEMINI_API_KEY: finalKey,
+         API_KEY: finalKey,
+         GOOGLE_API_KEY: finalKey
+      }),
+    },
   };
 });
