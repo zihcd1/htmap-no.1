@@ -5,6 +5,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>htmap-no.1 | Pro Heat Engine</title>
+    <script>
+      // 🚑 紧急修复补丁：防止浏览器报 process is not defined 错误
+      window.process = {
+        env: {
+          NODE_ENV: 'production',
+          // 这里的 trick 是：让代码能读到空对象，防止崩溃
+          GOOGLE_API_KEY: '', 
+          VITE_GOOGLE_API_KEY: ''
+        }
+      };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       body {
@@ -76,8 +87,10 @@
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <div id="root"></div>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>
